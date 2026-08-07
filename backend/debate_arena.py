@@ -150,10 +150,10 @@ Score this argument. JSON only:"""
                 return json.loads(response[start:end])
             return {"score": 5.0, "logic": 5.0, "rhetoric": 5.0, "evidence": 5.0, "feedback": "Could not parse judge response."}
 
-    def decide_winner(self, topic: str, for_scores: list[dict], against_scores: list[dict]) -> dict:
+    def decide_winner(self, topic: str, for_scores: list[float], against_scores: list[float]) -> dict:
         """Decide the debate winner based on cumulative scores."""
-        for_avg = sum(s["score"] for s in for_scores) / len(for_scores) if for_scores else 0
-        against_avg = sum(s["score"] for s in against_scores) / len(against_scores) if against_scores else 0
+        for_avg = sum(for_scores) / len(for_scores) if for_scores else 0
+        against_avg = sum(against_scores) / len(against_scores) if against_scores else 0
 
         winner = "FOR" if for_avg > against_avg else "AGAINST" if against_avg > for_avg else "TIE"
 

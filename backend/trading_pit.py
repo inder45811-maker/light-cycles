@@ -226,39 +226,58 @@ Be strategic. Don't just hold every turn. Trade when you see opportunity."""
         return self._mock_decision(agent_name, market, position)
 
     def _mock_decision(self, agent_name: str, market: MarketState, position: AgentPosition) -> tuple[str, float]:
-        """Simple heuristic agent when no API key is available."""
-        # Seed randomness from agent name + turn for consistency
+        """Heuristic agent with varied strategies. More aggressive now."""
         rng = random.Random(f"{agent_name}-{market.turn}")
-
         pnl = position.cash + position.units * market.price - self.starting_capital
         pnl_pct = pnl / self.starting_capital
+        total = position.cash + position.units * market.price
 
-        # Strategy varies by agent personality (hashed from name)
-        personality_seed = sum(ord(c) for c in agent_name) % 3
+        # Personality from agent name hash
+        seed = sum(ord(c) for c in agent_name) % 4
 
-        if personality_seed == 0:
-            # Aggressive — trades more, takes risks
-            if market.change_24h > 0.5 and position.cash > 100:
-                amt = min(position.cash * 0.3 / market.price, 10)
-                return ("buy", round(amt, 2))
-            elif market.change_24h < -1 and position.units > 0:
-                return ("sell", round(position.units * 0.5, 2))
-        elif personality_seed == 1:
-            # Conservative — holds more, sells on profit
-            if pnl_pct > 0.05 and position.units > 0:
-                return ("sell", round(position.units * 0.3, 2))
-            elif pnl_pct < -0.03 and position.cash > 500:
-                amt = min(position.cash * 0.15 / market.price, 5)
-                return ("buy", round(amt, 2))
-        else:
-            # Trend follower — buys on up, sells on down
-            if len(self.price_history) >= 3:
-                trend = self.price_history[-1] - self.price_history[-3]
-                if trend > 0 and position.cash > 200:
-                    amt = min(position.cash * 0.2 / market.price, 8)
+        if seed == 0:
+            # Aggressive scalper — trades frequently, small positions
+            if rng.random() < 0.7:  # 70% chance to act each turn
+                if rng.random() < 0.5 and position.cash > 500:
+                    amt = min(position.cash * rng.uniform(0.1, 0.4) / market.price, 15)
                     return ("buy", round(amt, 2))
-                elif trend < 0 and position.units > 0:
-                    return ("sell", round(position.units * 0.4, 2))
+                elif position.units > 0:
+                    amt = position.units * rng.uniform(0.2, 0.8)
+                    return ("sell", round(amt, 2))
+
+        elif seed == 1:
+            # Momentum trader — follows trends, bigger bets
+            if len(self.price_history) >= 5:
+                trend = (self.price_history[-1] / self.price_history[-5] - 1) * 100
+                if trend > 0.5 and position.cash > 1000:
+                    amt = min(position.cash * rng.uniform(0.2, 0.6) / market.price, 20)
+                    return ("buy", round(amt, 2))
+                elif trend < -0.5 and position.units > 0:
+                    return ("sell", round(position.units * rng.uniform(0.4, 1.0), 2))
+
+        elif seed == 2:
+            # Value investor — buys dips, sells rips
+            if len(self.price_history) >= 10:
+                avg = sum(self.price_history[-10:]) / 10
+                deviation = (market.price / avg - 1) * 100
+                if deviation < -2 and position.cash > 2000:
+                    amt = min(position.cash * rng.uniform(0.3, 0.7) / market.price, 25)
+                    return ("buy", round(amt, 2))
+                elif deviation > 3 and position.units > 0:
+                    return ("sell", round(position.units * rng.uniform(0.5, 1.0), 2))
+
+        else:
+            # Risk manager — tight stop-losses, takes profit early
+            if position.units > 0:
+                entry_price = position.trades[-1].price if position.trades else market.price
+                change = (market.price / entry_price - 1) * 100
+                if change > 2:  # take profit
+                    return ("sell", round(position.units * rng.uniform(0.3, 0.7), 2))
+                elif change < -1.5:  # stop loss
+                    return ("sell", 0)  # sell all
+            elif position.cash > 5000 and rng.random() < 0.3:
+                amt = min(position.cash * 0.2 / market.price, 10)
+                return ("buy", round(amt, 2))
 
         return ("hold", 0)
 
