@@ -1066,3 +1066,31 @@ button[style*="font-size: 12"] {
 .leaderboard-header span {
   font-size: 11px !important;
 }
+
+/* ── Sidebar z-index protection ───────────────────────────────── */
+
+/* Sidebar always on top */
+aside {
+  z-index: 300 !important;
+}
+
+/* Main content below sidebar */
+.main {
+  position: relative;
+  z-index: 1;
+}
+
+/* Prevent overlay issues */
+canvas {
+  z-index: 0 !important;
+}
+
+/* ── Canvas click-through ─────────────────────────────────────── */
+
+canvas {
+  pointer-events: none !important;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  z-index: 0 !important;
+}
