@@ -1,0 +1,26 @@
+# Render Blueprint — Light Cycles
+# Deploys as a single Web Service: FastAPI backend + React frontend
+
+services:
+  - type: web
+    name: light-cycles
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      cd frontend && npm install && npm run build
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: BASE_URL
+        value: https://light-cycles.onrender.com
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
