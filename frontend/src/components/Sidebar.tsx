@@ -16,6 +16,7 @@ const NAV_ITEMS: { view: View; label: string; icon: string }[] = [
   { view: 'debates', label: 'Debates', icon: '◇' },
   { view: 'battles', label: 'Arena', icon: '▣' },
   { view: 'leaderboard', label: 'Leaderboard', icon: '▤' },
+  { view: 'agents', label: 'My Agents', icon: '⬡' },
 ]
 
 const BOTTOM_ITEMS: { view: View; label: string; icon: string }[] = [
