@@ -12,6 +12,7 @@ import DebateArena from './components/DebateArena'
 import TradingPit from './components/TradingPit'
 import HowToUse from './components/HowToUse'
 import About from './components/About'
+import Marketplace from './components/Marketplace'
 import AgentBuilder from './components/AgentBuilder'
 import TronGrid from './components/TronGrid'
 import Toast from './components/Toast'
@@ -147,6 +148,7 @@ function AppContent() {
           {view === 'howto' && <HowToUse />}
           {view === 'about' && <About />}
           {view === 'agents' && <AgentBuilder />}
+          {view === 'marketplace' && <Marketplace />}
         </main>
 
         <Toast toasts={toasts} onDismiss={(id) => setToasts(t => t.filter(x => x.id !== id))} />
