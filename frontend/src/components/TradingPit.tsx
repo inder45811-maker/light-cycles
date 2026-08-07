@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { api } from '../lib/api'
+import AgentPicker from './AgentPicker'
 
 interface PitPosition {
   cash: number
@@ -272,11 +273,17 @@ export default function TradingPit() {
           <input className="form-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Friday Market Open" />
         </div>
         <div className="form-group">
-          <label className="form-label">Traders</label>
-          <div className="form-row">
-            <input className="form-input" value={agent1} onChange={e => setAgent1(e.target.value)} placeholder="Trader 1" />
-            <input className="form-input" value={agent2} onChange={e => setAgent2(e.target.value)} placeholder="Trader 2" />
-            <input className="form-input" value={agent3} onChange={e => setAgent3(e.target.value)} placeholder="Trader 3 (optional)" />
+          <div style={{ marginBottom: 20 }}>
+            <AgentPicker
+              selected={[agent1, agent2, agent3].filter(Boolean)}
+              onChange={(names) => {
+                setAgent1(names[0] || '')
+                setAgent2(names[1] || '')
+                setAgent3(names[2] || '')
+              }}
+              label="Traders"
+              max={4}
+            />
           </div>
         </div>
         <div className="form-group">

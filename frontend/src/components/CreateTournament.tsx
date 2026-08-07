@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AgentPicker from './AgentPicker'
 
 interface Props {
   onCreated: (tournament: any) => void
@@ -10,6 +11,7 @@ export default function CreateTournament({ onCreated }: Props) {
   const [problem, setProblem] = useState('')
   const [entryFee, setEntryFee] = useState('10')
   const [playerCap, setPlayerCap] = useState('8')
+  const [agents, setAgents] = useState<string[]>(['TRON', 'CLU', 'Quorra', 'Zuse'])
   const [testInput1, setTestInput1] = useState('')
   const [testExpected1, setTestExpected1] = useState('')
   const [testInput2, setTestInput2] = useState('')
@@ -45,12 +47,14 @@ export default function CreateTournament({ onCreated }: Props) {
           test_cases: testCases,
           entry_fee_cents: Math.round(parseFloat(entryFee || '0') * 100),
           player_cap: parseInt(playerCap || '8'),
+          agent_names: agents,
         }),
       })
       const tournament = await res.json()
       onCreated(tournament)
       // Reset form
       setTitle(''); setDescription(''); setProblem(''); setEntryFee('10'); setPlayerCap('8')
+      setAgents(['TRON', 'CLU', 'Quorra', 'Zuse'])
       setTestInput1(''); setTestExpected1(''); setTestInput2(''); setTestExpected2(''); setTestInput3(''); setTestExpected3('')
     } catch (e) {
       console.error('Create failed', e)
@@ -153,6 +157,10 @@ export default function CreateTournament({ onCreated }: Props) {
               </div>
             </div>
           )}
+        </div>
+
+        <div className="form-group">
+          <AgentPicker selected={agents} onChange={setAgents} label="Competing Agents" max={8} />
         </div>
 
         <div className="form-group">

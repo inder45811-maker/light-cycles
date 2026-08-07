@@ -24,6 +24,7 @@ class CreateTournamentRequest(BaseModel):
     test_cases: list[TestCase] = Field(..., min_length=1, max_length=20)
     entry_fee_cents: int = Field(default=0, ge=0, le=100000)
     player_cap: int = Field(default=8, ge=2, le=64)
+    agent_names: list[str] = Field(default_factory=list)
     scheduled_at: float | None = None
 
 
