@@ -978,3 +978,91 @@ body {
     gap: 32px;
   }
 }
+
+/* ── Readability improvements ──────────────────────────────────── */
+
+/* Boost small text sizes */
+.agent-chip,
+.battle-card-status,
+.lb-stat,
+.score-detail,
+.form-label,
+.test-result-row,
+.arena-verdict-sub,
+.leaderboard-header span,
+.leaderboard-row span {
+  font-size: 12px !important;
+}
+
+/* Increase contrast on dim text */
+.text-dim,
+[style*="color: var(--text-dim)"],
+.battle-card-desc,
+.score-detail,
+.lb-stat {
+  color: #5a80a0 !important;
+}
+
+/* Make mono text more readable */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Stronger contrast for status dots */
+.status-dot {
+  opacity: 0.9;
+}
+
+/* Better label contrast */
+.form-label {
+  color: #00b8e0 !important;
+  font-size: 11px;
+}
+
+/* Agent names more visible */
+.agent-chip {
+  font-weight: 500;
+}
+
+/* Empty state text bigger */
+.empty-state-text {
+  font-size: 15px !important;
+  letter-spacing: 1px;
+}
+
+/* Card descriptions more readable */
+.battle-card-desc {
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
+/* Test result text */
+.test-result-row {
+  font-size: 13px !important;
+}
+
+/* Trade feed text */
+[style*="font-size: 11"] {
+  font-size: 12px !important;
+}
+
+/* Button text */
+.btn-sm {
+  font-size: 11px !important;
+  letter-spacing: 0.5px;
+}
+
+/* Sidebar nav items */
+button[style*="font-size: 12"] {
+  font-size: 13px !important;
+}
+
+/* Leaderboard */
+.leaderboard-row {
+  font-size: 13px !important;
+}
+
+.leaderboard-header span {
+  font-size: 11px !important;
+}
