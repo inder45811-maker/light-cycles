@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from arena import Arena
 from tournament import TournamentManager
 from persistence import load_tournaments, load_battles, load_leaderboard
-from routes import battles_router, tournaments_router, debates_router, pits_router, auth_router, health_router, websocket_router
+from routes import battles_router, tournaments_router, debates_router, pits_router, auth_router, promo_router, edu_router, health_router, websocket_router
 
 
 def create_app() -> FastAPI:
@@ -39,6 +39,8 @@ def create_app() -> FastAPI:
     app.include_router(debates_router)
     app.include_router(pits_router)
     app.include_router(auth_router)
+    app.include_router(promo_router)
+    app.include_router(edu_router)
     app.include_router(websocket_router)
 
     # Leaderboard
