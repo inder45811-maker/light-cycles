@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { Battle, View, ToastMessage } from './types'
+import type { Battle, ToastMessage, View } from './types'
 import { AuthProvider, useAuth } from './lib/auth'
-import AppHeader from './components/AppHeader'
+import Sidebar from './components/Sidebar'
+import Dashboard from './components/Dashboard'
 import Arena from './components/Arena'
 import Leaderboard from './components/Leaderboard'
 import CreateBattle from './components/CreateBattle'
@@ -18,12 +19,12 @@ import { api } from './lib/api'
 import { useWebSocket } from './hooks/useWebSocket'
 
 function AppContent() {
-  const [view, setView] = useState<View>('tournaments')
+  const [view, setView] = useState<View>('dashboard')
   const [battles, setBattles] = useState<Battle[]>([])
   const [selectedBattle, setSelectedBattle] = useState<Battle | null>(null)
   const [toasts, setToasts] = useState<ToastMessage[]>([])
   const [showAuth, setShowAuth] = useState(false)
-  const { user, loading } = useAuth()
+  const { user, loading, logout } = useAuth()
 
   const addToast = (type: ToastMessage['type'], text: string) => {
     const id = Math.random().toString(36).slice(2)
@@ -50,46 +51,34 @@ function AppContent() {
     <ErrorBoundary>
       <div className="app">
         <TronGrid />
-        <div className="scanline" />
 
-        <AppHeader
+        <Sidebar
           view={view}
-          connected={connected}
           onNavigate={(v) => { setView(v); setSelectedBattle(null) }}
+          user={user ? { username: user.username, balance_display: user.balance_display, is_guest: user.is_guest } : null}
+          connected={connected}
+          onSignIn={() => setShowAuth(true)}
+          onLogout={() => { logout(); setShowAuth(false) }}
         />
 
-        {/* Auth + Wallet in header area */}
+        {/* Header area — wallet + user */}
         <div style={{
-          position: 'fixed', top: 8, right: 16, zIndex: 200,
+          position: 'fixed', top: 12, right: 20, zIndex: 200,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
-          {!loading && !user && (
-            <button className="btn btn-sm" onClick={() => setShowAuth(true)}
-              style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
-              Sign In
-            </button>
-          )}
-          {user && (
-            <>
-              <span style={{ color: 'var(--text-dim)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>
-                {user.username}
-              </span>
-              <WalletPanel />
-              <button className="btn btn-sm"
-                style={{ borderColor: 'var(--border)', color: 'var(--text-dim)', fontSize: 10 }}
-                onClick={() => { useAuth().logout(); setShowAuth(false) }}>
-                Exit
-              </button>
-            </>
-          )}
+          {user && <WalletPanel />}
         </div>
+
+        {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
         {/* Guest banner */}
         {user?.is_guest && (
           <div style={{
+            position: 'fixed', top: 0, left: 220, right: 0, zIndex: 150,
             background: 'rgba(255, 107, 0, 0.1)', borderBottom: '1px solid var(--orange)',
-            padding: '8px 16px', textAlign: 'center', fontSize: 11,
+            padding: '8px 20px', fontSize: 11,
             color: 'var(--orange)', fontFamily: 'var(--font-mono)',
+            textAlign: 'center',
           }}>
             Guest mode — <button onClick={() => setShowAuth(true)}
               style={{ background: 'none', border: 'none', color: 'var(--cyan)', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, textDecoration: 'underline' }}>
@@ -98,9 +87,13 @@ function AppContent() {
           </div>
         )}
 
-        {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+        <main className="main" style={{
+          marginLeft: 220, padding: '32px 40px',
+          marginTop: user?.is_guest ? 40 : 0,
+          minHeight: '100vh',
+        }}>
+          {view === 'dashboard' && <Dashboard />}
 
-        <main className="main" style={user?.is_guest ? { marginTop: 40 } : {}}>
           {view === 'battles' && !selectedBattle && (
             <>
               <h2 className="section-title">Active Battles</h2>
@@ -157,9 +150,5 @@ function AppContent() {
 }
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  )
+  return <AuthProvider><AppContent /></AuthProvider>
 }

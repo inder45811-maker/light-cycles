@@ -805,3 +805,79 @@ body {
     gap: 8px;
   }
 }
+
+/* ── Glass morphism ────────────────────────────────────────────── */
+
+.glass-panel {
+  background: rgba(13, 26, 53, 0.5);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(10, 48, 80, 0.5);
+  border-radius: 8px;
+}
+
+.glass-panel:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.08);
+}
+
+/* ── Sidebar layout ────────────────────────────────────────────── */
+
+.app {
+  display: flex;
+}
+
+.main {
+  flex: 1;
+  margin-left: 220px;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .main {
+    margin-left: 0;
+    padding: 16px 12px !important;
+  }
+}
+
+/* ── Stat cards ───────────────────────────────────────────────── */
+
+.stat-card {
+  background: rgba(13, 26, 53, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(10, 48, 80, 0.4);
+  border-radius: 8px;
+  padding: 20px 24px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+/* ── Improved button hover ────────────────────────────────────── */
+
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* ── Card improvements ────────────────────────────────────────── */
+
+.battle-card {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.battle-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.08);
+}
+
+/* ── Smooth transitions ───────────────────────────────────────── */
+
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}

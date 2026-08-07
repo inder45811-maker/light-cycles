@@ -112,4 +112,4 @@ export interface ToastMessage {
   text: string
 }
 
-export type View = 'battles' | 'leaderboard' | 'create' | 'tournaments' | 'create-tournament' | 'debates' | 'pits'
+export type View = 'dashboard' | 'battles' | 'leaderboard' | 'create' | 'tournaments' | 'create-tournament' | 'debates' | 'pits'
