@@ -1,35 +1,119 @@
 """
 Light Cycles — AI Agent Arena
-FastAPI application with WebSocket, tournaments, Stripe payments, debates.
+Production-ready FastAPI application.
 """
 
 import os
-from fastapi import FastAPI
+import sys
+import signal
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from arena import Arena
 from tournament import TournamentManager
 from persistence import load_tournaments, load_battles, load_leaderboard
-from routes import battles_router, tournaments_router, debates_router, pits_router, auth_router, promo_router, edu_router, seo_router, agent_router, health_router, websocket_router
+from routes import (
+    battles_router, tournaments_router, debates_router, pits_router,
+    auth_router, promo_router, edu_router, seo_router,
+    agent_router, health_router, websocket_router,
+)
 
+# ── Config ───────────────────────────────────────────────────────────
+
+IS_PRODUCTION = os.getenv("RENDER", "") == "1" or os.getenv("PRODUCTION", "") == "1"
+ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "https://light-cycleslight-cycles.onrender.com,http://localhost:8420,http://192.168.1.215:8420").split(",")
+SECRET_KEY = os.getenv("SECRET_KEY", os.urandom(32).hex())
+
+
+# ── Middleware ────────────────────────────────────────────────────────
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        if IS_PRODUCTION:
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        return response
+
+
+class ErrorHandlerMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        try:
+            return await call_next(request)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return JSONResponse(
+                status_code=500,
+                content={"error": "internal_error", "detail": str(e) if not IS_PRODUCTION else "Internal server error"},
+            )
+
+
+# ── Lifecycle ─────────────────────────────────────────────────────────
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup and shutdown."""
+    print(f"⚡ Light Cycles starting (production={IS_PRODUCTION})")
+
+    # Init arena
+    app.state.arena = Arena()
+    app.state.tournaments = TournamentManager()
+
+    # Load saved state
+    try:
+        load_tournaments(app.state.tournaments)
+        load_battles(app.state.arena)
+        print(f"📦 Loaded {len(app.state.tournaments.tournaments)} tournaments, {len(app.state.arena.battles)} battles")
+    except Exception as e:
+        print(f"⚠️ Load state failed: {e}")
+
+    # Leaderboard
+    leaderboard_data = load_leaderboard()
+    if leaderboard_data:
+        for entry in leaderboard_data:
+            app.state.arena.leaderboard[entry.get("agent_name", entry.get("agent", ""))] = entry.get("score", 0)
+
+    print(f"✅ Ready — {len(app.state.arena.leaderboard)} leaderboard entries")
+
+    yield  # App runs here
+
+    # Shutdown
+    print("⚡ Light Cycles shutting down")
+    app.state.arena.cleanup()
+    app.state.tournaments.cleanup()
+    print("✅ Shutdown complete")
+
+
+# ── App ────────────────────────────────────────────────────────────────
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Light Cycles — AI Arena", version="1.0.0")
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+    app = FastAPI(
+        title="Light Cycles",
+        version="2.0.0",
+        description="AI agent arena — code battles, trading pits, debates",
+        lifespan=lifespan,
+        docs_url="/api/docs" if not IS_PRODUCTION else None,
+        redoc_url=None,
     )
 
-    # Shared state
-    app.state.arena = Arena()
-    app.state.tournaments = TournamentManager(
-        stripe_secret=os.getenv("STRIPE_SECRET_KEY"),
-        stripe_webhook_secret=os.getenv("STRIPE_WEBHOOK_SECRET"),
+    # Middleware
+    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(ErrorHandlerMiddleware)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=ALLOWED_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+        max_age=86400,
     )
 
     # Routes
@@ -50,44 +134,34 @@ def create_app() -> FastAPI:
     async def leaderboard():
         return load_leaderboard() or app.state.arena.get_leaderboard()
 
-    # Stripe webhook
-    @app.post("/api/stripe/webhook")
-    async def stripe_webhook(request: __import__("fastapi").Request):
-        from fastapi import HTTPException
-        payload = await request.body()
-        sig_header = request.headers.get("stripe-signature", "")
-        event = app.state.tournaments.verify_stripe_webhook(payload, sig_header)
-        if not event:
-            raise HTTPException(status_code=400, detail="Invalid signature")
-        if event.get("type") == "checkout.session.completed":
-            session = event["data"]["object"]
-            meta = session.get("metadata", {})
-            tid, pid = meta.get("tournament_id"), meta.get("player_id")
-            if tid and pid:
-                app.state.tournaments.handle_payment_success(tid, pid, session["id"])
-        return {"received": True}
-
-    # Startup
-    @app.on_event("startup")
-    async def startup():
-        try:
-            load_tournaments(app.state.tournaments)
-            load_battles(app.state.arena)
-            print(f"📦 Loaded {len(app.state.tournaments.tournaments)} tournaments, {len(app.state.arena.battles)} battles")
-        except Exception as e:
-            print(f"⚠️ Load state failed: {e}")
-
-    # Static files — AFTER all API routes so they take priority
+    # Static files — AFTER all API routes
     frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
     if os.path.exists(frontend_dist):
         app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="static")
+
+    # Graceful shutdown handler
+    def _shutdown(sig, frame):
+        print(f"Received signal {sig}, shutting down...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, _shutdown)
+    signal.signal(signal.SIGINT, _shutdown)
 
     return app
 
 
 app = create_app()
 
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", "8420"))
-    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=port,
+        workers=1,
+        log_level="info",
+        proxy_headers=True,
+        forwarded_allow_ips="*",
+    )
