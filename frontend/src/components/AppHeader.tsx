@@ -8,6 +8,7 @@ interface Props {
 
 const NAV_ITEMS: { view: View; label: string }[] = [
   { view: 'tournaments', label: 'Tournaments' },
+  { view: 'pits', label: 'Pits' },
   { view: 'debates', label: 'Debates' },
   { view: 'battles', label: 'Arena' },
   { view: 'leaderboard', label: 'Leaderboard' },

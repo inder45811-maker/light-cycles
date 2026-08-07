@@ -7,6 +7,7 @@ import CreateBattle from './components/CreateBattle'
 import TournamentLobby from './components/TournamentLobby'
 import CreateTournament from './components/CreateTournament'
 import DebateArena from './components/DebateArena'
+import TradingPit from './components/TradingPit'
 import TronGrid from './components/TronGrid'
 import Toast from './components/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -119,6 +120,7 @@ export default function App() {
           {view === 'tournaments' && <TournamentLobby />}
           {view === 'create-tournament' && <CreateTournament onCreated={() => setView('tournaments')} />}
           {view === 'debates' && <DebateArena />}
+          {view === 'pits' && <TradingPit />}
         </main>
 
         <Toast toasts={toasts} onDismiss={(id) => setToasts(t => t.filter(x => x.id !== id))} />
