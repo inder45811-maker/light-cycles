@@ -76,7 +76,7 @@ function AppContent() {
         {/* Guest banner */}
         {user?.is_guest && (
           <div style={{
-            position: 'fixed', top: 0, left: 220, right: 0, zIndex: 150,
+            position: 'fixed', top: 0, left: 260, right: 0, zIndex: 150,
             background: 'rgba(255, 107, 0, 0.1)', borderBottom: '1px solid var(--orange)',
             padding: '8px 20px', fontSize: 11,
             color: 'var(--orange)', fontFamily: 'var(--font-mono)',
@@ -90,7 +90,7 @@ function AppContent() {
         )}
 
         <main className="main" style={{
-          marginLeft: 220, padding: '32px 40px',
+          marginLeft: 260, padding: '32px 40px',
           marginTop: user?.is_guest ? 40 : 0,
           minHeight: '100vh',
         }}>

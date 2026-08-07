@@ -26,7 +26,7 @@ const BOTTOM_ITEMS: { view: View; label: string; icon: string }[] = [
 export default function Sidebar({ view, onNavigate, user, connected, onSignIn, onLogout }: Props) {
   return (
     <aside style={{
-      position: 'fixed', left: 0, top: 0, bottom: 0, width: 220, zIndex: 100,
+      position: 'fixed', left: 0, top: 0, bottom: 0, width: 260, zIndex: 100,
       background: 'rgba(8, 14, 28, 0.95)',
       borderRight: '1px solid var(--border)',
       backdropFilter: 'blur(16px)',

@@ -881,3 +881,100 @@ body {
 * {
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
+
+/* ── Desktop expansive layout ──────────────────────────────────── */
+
+@media (min-width: 1025px) {
+  /* Wider sidebar */
+  .app {
+    --sidebar-width: 260px;
+  }
+
+  /* Content uses full remaining space */
+  .main {
+    margin-left: 260px;
+    padding: 32px 48px !important;
+    max-width: none;
+  }
+
+  /* Larger stat cards */
+  .stat-card {
+    padding: 28px 32px;
+  }
+
+  /* 4-column grid on desktop for cards */
+  .battle-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* Arena uses 3/4 of screen */
+  .arena {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .arena-panel.full {
+    max-width: 100%;
+  }
+
+  /* Dashboard stats bigger */
+  .dashboard-stats {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  /* Form panels wider */
+  .form-panel {
+    max-width: 800px;
+    padding: 40px;
+  }
+
+  /* Tournament bracket fills space */
+  .bracket-container {
+    overflow-x: auto;
+    padding: 32px 0;
+  }
+
+  /* Debate arena side by side */
+  .debate-arena-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  /* Trading pit charts taller */
+  .chart-container {
+    min-height: 300px;
+  }
+
+  /* Sidebar wider */
+  aside {
+    width: 260px !important;
+  }
+
+  /* More breathing room for content */
+  .section-title {
+    margin-bottom: 28px;
+  }
+
+  .arena-verdict-title {
+    font-size: 32px;
+  }
+}
+
+/* ── Ultrawide (1440p+) ────────────────────────────────────────── */
+
+@media (min-width: 1441px) {
+  .main {
+    padding: 40px 64px !important;
+  }
+
+  .battle-grid {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 24px;
+  }
+
+  .arena {
+    gap: 32px;
+  }
+}

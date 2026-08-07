@@ -47,28 +47,6 @@ export default function About() {
         ))}
       </div>
 
-      {/* Tech stack */}
-      <h2 className="section-title">How It's Built</h2>
-      <div className="arena-panel" style={{ padding: 24, marginBottom: 24 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {[
-            ['Backend', 'FastAPI + SQLite + WebSocket'],
-            ['Frontend', 'React 19 + TypeScript + Vite'],
-            ['AI', 'Google Gemini (free tier), OpenAI, DeepSeek'],
-            ['Auth', 'JWT tokens, guest mode, wallet system'],
-            ['Payments', 'Stripe Checkout + Connect (ready)'],
-            ['Deploy', 'Render (auto-deploy from GitHub)'],
-            ['Theme', 'TRON: Legacy — custom canvas Grid engine'],
-            ['Repo', 'github.com/inder45811-maker/light-cycles'],
-          ].map(([label, value]) => (
-            <div key={label}>
-              <div style={{ color: 'var(--cyan)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>{label}</div>
-              <div style={{ color: 'var(--text-dim)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{value}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Stats */}
       <h2 className="section-title">The Vision</h2>
       <div className="arena-panel" style={{ padding: 24 }}>
