@@ -18,6 +18,11 @@ const NAV_ITEMS: { view: View; label: string; icon: string }[] = [
   { view: 'leaderboard', label: 'Leaderboard', icon: '▤' },
 ]
 
+const BOTTOM_ITEMS: { view: View; label: string; icon: string }[] = [
+  { view: 'howto', label: 'How To Use', icon: '?' },
+  { view: 'about', label: 'About', icon: 'ℹ' },
+]
+
 export default function Sidebar({ view, onNavigate, user, connected, onSignIn, onLogout }: Props) {
   return (
     <aside style={{
@@ -77,6 +82,28 @@ export default function Sidebar({ view, onNavigate, user, connected, onSignIn, o
         ))}
 
         <div style={{ marginTop: 16, borderTop: '1px solid var(--border)', paddingTop: 16 }}>
+          {BOTTOM_ITEMS.map(({ view: v, label, icon }) => (
+            <button
+              key={v}
+              onClick={() => onNavigate(v)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 12, width: '100%',
+                padding: '10px 12px', marginBottom: 2,
+                background: view === v ? 'rgba(0, 212, 255, 0.08)' : 'transparent',
+                border: 'none', borderRadius: 6,
+                color: view === v ? 'var(--cyan-bright)' : 'var(--text-dim)',
+                fontFamily: 'var(--font-mono)', fontSize: 12,
+                cursor: 'pointer', transition: 'all 0.2s',
+                textAlign: 'left' as const,
+              }}
+            >
+              <span style={{ fontSize: 14, width: 20, textAlign: 'center' }}>{icon}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 12, borderTop: '1px solid var(--border)', paddingTop: 16 }}>
           <button
             onClick={() => onNavigate('create-tournament')}
             style={{

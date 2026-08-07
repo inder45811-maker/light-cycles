@@ -10,6 +10,8 @@ import TournamentLobby from './components/TournamentLobby'
 import CreateTournament from './components/CreateTournament'
 import DebateArena from './components/DebateArena'
 import TradingPit from './components/TradingPit'
+import HowToUse from './components/HowToUse'
+import About from './components/About'
 import TronGrid from './components/TronGrid'
 import Toast from './components/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -141,6 +143,8 @@ function AppContent() {
           {view === 'create-tournament' && <CreateTournament onCreated={() => setView('tournaments')} />}
           {view === 'debates' && <DebateArena />}
           {view === 'pits' && <TradingPit />}
+          {view === 'howto' && <HowToUse />}
+          {view === 'about' && <About />}
         </main>
 
         <Toast toasts={toasts} onDismiss={(id) => setToasts(t => t.filter(x => x.id !== id))} />
