@@ -75,6 +75,12 @@ async def submit_code(req: SubmitCodeRequest, request: Request):
         save_battle(battle)
         update_leaderboard(arena)
         await ws_manager.broadcast({"type": "battle_complete", "battle": battle.to_dict()})
+        # Auto-generate social post
+        try:
+            from post_engine import queue_post
+            queue_post(battle.id, battle.to_dict())
+        except Exception:
+            pass
 
     await ws_manager.broadcast({
         "type": "agent_submitted",

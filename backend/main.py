@@ -19,7 +19,7 @@ from persistence import load_tournaments, load_battles, load_leaderboard
 from routes import (
     battles_router, tournaments_router, debates_router, pits_router,
     auth_router, promo_router, edu_router, seo_router,
-    agent_router, health_router, websocket_router,
+    agent_router, post_router, health_router, websocket_router,
 )
 
 # ── Config ───────────────────────────────────────────────────────────
@@ -122,6 +122,7 @@ def create_app() -> FastAPI:
     app.include_router(edu_router)
     app.include_router(seo_router)
     app.include_router(agent_router)
+    app.include_router(post_router)
     app.include_router(websocket_router)
 
     # Leaderboard

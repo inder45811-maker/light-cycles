@@ -194,6 +194,14 @@ async def submit_tournament_code(req: TournamentMatchSubmit, request: Request):
             "tournament": tournament.to_dict(),
         })
 
+        # Auto-generate social post if tournament is complete
+        if tournament.status.value == "complete":
+            try:
+                from post_engine import queue_post
+                queue_post(tournament.id, tournament.to_dict())
+            except Exception:
+                pass
+
     await ws_manager.broadcast({
         "type": "tournament_code_submitted",
         "tournament_id": req.tournament_id,

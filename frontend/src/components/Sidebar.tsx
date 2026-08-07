@@ -21,6 +21,7 @@ const NAV_ITEMS: { view: View; label: string; icon: string }[] = [
 ]
 
 const BOTTOM_ITEMS: { view: View; label: string; icon: string }[] = [
+  { view: 'posts', label: 'Post Queue', icon: '📢' },
   { view: 'howto', label: 'How To Use', icon: '?' },
   { view: 'about', label: 'About', icon: 'ℹ' },
 ]
