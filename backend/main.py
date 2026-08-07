@@ -75,13 +75,8 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️ Load state failed: {e}")
 
-    # Leaderboard
-    leaderboard_data = load_leaderboard()
-    if leaderboard_data:
-        for entry in leaderboard_data:
-            app.state.arena.leaderboard[entry.get("agent_name", entry.get("agent", ""))] = entry.get("score", 0)
-
-    print(f"✅ Ready — {len(app.state.arena.leaderboard)} leaderboard entries")
+    # Leaderboard via persistence
+    print(f"✅ Ready — arena + tournaments initialized")
 
     yield  # App runs here
 
